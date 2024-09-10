@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+our_temp_dir=$(mktemp -d 2>/dev/null || mktemp -d -t "our_temp_dir")
+function cleanup_temp_dir() { rm -rf "$our_temp_dir" ; } && trap "cleanup_temp_dir" EXIT
+
+if [[ "$(uname -s)" == Darwin ]]; then
+    os=macos
+else
+    os=linux
+fi
+
+if [[ "$(uname -p)" == arm ]]; then
+    arch=arm
+else
+    arch=x86
+fi
+
+if [[ "$os" == macos && "$arch" == arm ]]; then
+    url="https://github.com/kkinnear/zprint/releases/download/1.2.9/zprintma-1.2.9"
+    expected_sha="25cb06b8f3721a8f7fb5a9731c139126ad268a51592cce1df2927a0e9422f4fe"
+elif [[ "$os" == macos ]]; then
+    url="https://github.com/kkinnear/zprint/releases/download/1.2.9/zprintm-1.2.9"
+    expected_sha="963ccce9cc48195acea17b18477d6a19f16f31059d1652e321a5ea52cddea280"
+else
+    url="https://github.com/kkinnear/zprint/releases/download/1.2.9/zprintl-1.2.9"
+    expected_sha="ed2f056ea8108c81bfd8c16ce01cc81aae4a61ec3f23faf94571b8f64c3ecece"
+fi
+
+dir="$HOME/.zprint-cache"
+
+if ! [[ -f "$dir/${expected_sha}" ]]; then
+    mkdir -p "$dir"
+
+    curl -SL -o "$our_temp_dir/zprint" "$url"
+
+    if hash python; then
+      python_cmd=python
+    elif hash python3; then
+      python_cmd=python3
+    else
+      echo "python is not installed"
+      exit 1
+    fi
+
+    actual_sha="$("$python_cmd" -c "import sys,hashlib; m=hashlib.sha256(); f=open(sys.argv[1],'rb') if len(sys.argv)>1 else sys.stdin; m.update(f.read()); print(m.hexdigest())" "$our_temp_dir/zprint")"
+    if [[ "$actual_sha" != "$expected_sha" ]]; then
+        printf 'Sha mismatch. Expected=%s Actual=%s\n' "$expected_sha" "$actual_sha"
+        exit 1
+    fi
+
+    chmod +x "$our_temp_dir/zprint"
+
+    mv "$our_temp_dir/zprint" "$dir/${expected_sha}"
+    cleanup_temp_dir
+fi
+
+inf="${1-}"
+outf="${2-}"
+
+if [[ "$inf" == "" ]]; then
+    "$dir/${expected_sha}"
+elif  [[ "$outf" == "" ]]; then
+    "$dir/${expected_sha}" < "$inf"
+else
+    "$dir/${expected_sha}" < "$inf" > "$outf"
+fi

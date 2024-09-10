@@ -1,0 +1,1 @@
+/home/dusakee/.config/emacs/elpaca/repos/use-package/use-package-lint.el

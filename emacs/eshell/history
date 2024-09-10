@@ -1,0 +1,15 @@
+sudo apt install elpa-counsel
+sudo apt install elpa-ivy-hydra
+git clone "Yevgnen/ivy-rich"
+git clone "https://github.com/Yevgnen/ivy-rich"
+ls
+ls -a
+git clone "https://github.com/domtronn/all-the-icons.el"
+git clone "https://github.com/domtronn/all-the-icons.el"
+git clone "https://github.com/seagle0128/all-the-icons-ivy-rich?tab=readme-ov-file"
+git clone "https://github.com/seagle0128/all-the-icons-ivy-rich?tab=readme-ov-file"\\\\\\\\
+git clone "https://github.com/seagle0128/all-the-icons-ivy-rich?tab=readme-ov-file"
+git clone "https://github.com/seagle0128/all-the-icons-ivy-rich"
+history
+git clone "https://github.com/Yevgnen/ivy-rich"
+git clone "https://github.com/jtbm37/all-the-icons-dired"
